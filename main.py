@@ -6,13 +6,11 @@ from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
-    ConversationHandler,
-    MessageHandler,
-    TypeHandler,
-    filters,
+    TypeHandler
 )
 
 import plugins.game_1a2b
+import plugins.solve_1a2b
 
 try:
     with open('config.yaml', 'r') as config_file:
@@ -37,13 +35,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def log_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logger.info(f"{update.effective_user.full_name}({update.effective_user.id}): {update.effective_message.text}")
+    logger.info(f"{update.effective_user.full_name}({update.effective_user.id}):"
+                f"{update.effective_message.text}")
 
 
 def main() -> None:
     """Run the bot."""
     if PROXY:
-        application = Application.builder().token(TOKEN).proxy(PROXY).get_updates_proxy(PROXY).build()
+        application = Application.builder().token(TOKEN).proxy(
+            PROXY).get_updates_proxy(PROXY).build()
     else:
         application = Application.builder().token(TOKEN).build()
 
@@ -51,8 +51,11 @@ def main() -> None:
     log_handler = TypeHandler(Update, log_message)
 
     application.add_handler(command_handler)
-    application.add_handlers(plugins.game_1a2b.handlers)
     application.add_handler(log_handler, -1)
+
+    # Plugins
+    application.add_handlers(plugins.game_1a2b.handlers)
+    application.add_handlers(plugins.solve_1a2b.handlers)
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 

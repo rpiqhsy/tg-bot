@@ -11,8 +11,10 @@ from telegram.ext import (
 
 GUESSING = 0
 
+
 def generate_1a2b_number() -> str:
     return "".join(random.sample("0123456789", 4))
+
 
 async def start_1a2b(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Ask the user to input 1a2b guess."""
